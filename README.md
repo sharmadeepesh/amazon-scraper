@@ -6,6 +6,7 @@ Scrapes Amazon Product Details for defined categories
   <li>Create a free account. <a href="https://www.scraperapi.com">ScraperAPI</a></li>
   <li>Go to the dashboard and copy your API KEY</li>
   <li>Replace YOUR_API_KEY in "amazon.py" with your API key</li>
+</ol>
 
 <h3>Installing Libraries</h3>
 <p>In terminal, enter <br/>
