@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 
 search_categories = ['earphones','smartphones','coolers','monitors','books','television', 'keyboards','mouse','bagpacks','sunglasses']
 search_url = "https://www.amazon.com/s?k={}"
+api_url = "http://api.scraperapi.com?api_key=YOUR_API_KEY_HERE"
 links = []
 name=[]
 prices = []
@@ -48,7 +49,7 @@ def get_stars(soup):
     try:
         star = soup.find('span',{'id':'acrPopover'})['title']
         stars.append(star[0:3])
-    except AttributeError:
+    except TypeError:
         stars.append("Not Found")
 
 def get_stock_status(soup):
@@ -66,7 +67,7 @@ def get_image(soup):
         images.append("Not Found")
 
 def get_soup(url):
-    content = requests.get(url).text
+    content = requests.get(api_url+url).text
     soup = BeautifulSoup(content,'html.parser')
     get_price(soup)
     get_image(soup)
@@ -80,21 +81,18 @@ def get_name(soup):
         name.append((product.text).strip())
 
 def get_links(category):
-    search = requests.get(search_url.format(category),headers={
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
-    }).text
+    url = api_url+search_url
+    search = requests.get(url.format(category)).text
     soup = BeautifulSoup(search,'html.parser')
-    print(soup)
-    headings = soup.find_all('span',{'class':'a-size-mini'})
+    headings = soup.find_all('h2',{'class':'a-size-mini'})
     for product in headings:
         link = "https://www.amazon.com" + product.find('a')['href']
         links.append(link)
-        print(link)
     get_name(headings)
 
 def get_json():
     for i in range(len(name)):
-        products[name[i]]={
+        products[i]={
             'price': prices[i],
             'image': images[i],
             'details': details[i],
@@ -109,10 +107,11 @@ def get_json():
 
 if __name__ == "__main__":
     for category in categories:
-        get_links(category)
+        get_links('earphones')
     for link in links:
         get_soup(link)
     get_json()
+
 
 #For Error Catching Purposes
 '''for i in range(len(links)):
